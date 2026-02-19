@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../api/client";
-import type { AmmoBox, Components, Load } from "../../../shared/types";
+import type { AmmoBox, Components, Load, SavedLoad } from "../../../shared/types";
 
 export default function ReloadForm() {
   const { id } = useParams<{ id: string }>();
@@ -22,11 +22,13 @@ export default function ReloadForm() {
   });
   const [numberOfRounds, setNumberOfRounds] = useState(0);
   const [notes, setNotes] = useState("");
+  const [savedLoads, setSavedLoads] = useState<SavedLoad[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!id) return;
-    Promise.all([api.getBox(id), api.getComponents()]).then(([b, c]) => {
+    Promise.all([api.getBox(id), api.getComponents(), api.getLoads()]).then(([b, c, sl]) => {
+      setSavedLoads(sl);
       setBox(b);
       setComponents(c);
       setNumberOfRounds(b.numberOfRounds);
@@ -81,6 +83,29 @@ export default function ReloadForm() {
         <hr />
 
         <h3 className="font-medium">New Load</h3>
+        <div>
+          <label className="block text-xs text-gray-500 mb-1">Use a saved load</label>
+          <select
+            onChange={(e) => {
+              const sl = savedLoads.find((l) => l.id === e.target.value);
+              if (sl) {
+                setLoad({
+                  powderCharge: sl.powderCharge,
+                  powder: sl.powder,
+                  primer: sl.primer,
+                  projectile: sl.projectile,
+                  length: sl.length,
+                });
+              }
+            }}
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+          >
+            <option value="">Custom</option>
+            {savedLoads.map((sl) => (
+              <option key={sl.id} value={sl.id}>{sl.name}</option>
+            ))}
+          </select>
+        </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="block text-xs text-gray-500 mb-1">Projectile</label>

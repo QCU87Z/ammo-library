@@ -11,6 +11,8 @@ import ActionForm from "./pages/ActionForm";
 import BarrelList from "./pages/BarrelList";
 import BarrelForm from "./pages/BarrelForm";
 import BarrelDetail from "./pages/BarrelDetail";
+import LoadList from "./pages/LoadList";
+import LoadForm from "./pages/LoadForm";
 import ComponentManager from "./pages/ComponentManager";
 import ScanQR from "./pages/ScanQR";
 import PrintLabels from "./pages/PrintLabels";
@@ -33,6 +35,9 @@ export default function App() {
         <Route path="/barrels" element={<BarrelList />} />
         <Route path="/barrels/:id" element={<BarrelDetail />} />
         <Route path="/barrels/:id/edit" element={<BarrelForm />} />
+        <Route path="/loads" element={<LoadList />} />
+        <Route path="/loads/new" element={<LoadForm />} />
+        <Route path="/loads/:id/edit" element={<LoadForm />} />
         <Route path="/components" element={<ComponentManager />} />
         <Route path="/scan" element={<ScanQR />} />
         <Route path="/print" element={<PrintLabels />} />

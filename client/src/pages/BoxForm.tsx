@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../api/client";
-import type { Barrel, Action, Components, Load } from "../../../shared/types";
+import type { Barrel, Action, Components, Load, SavedLoad } from "../../../shared/types";
 
 export default function BoxForm() {
   const { id } = useParams<{ id: string }>();
@@ -21,6 +21,7 @@ export default function BoxForm() {
     length: "",
   });
 
+  const [savedLoads, setSavedLoads] = useState<SavedLoad[]>([]);
   const [barrels, setBarrels] = useState<Barrel[]>([]);
   const [actions, setActions] = useState<Action[]>([]);
   const [components, setComponents] = useState<Components>({
@@ -31,13 +32,14 @@ export default function BoxForm() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetches: Promise<any>[] = [api.getBarrels(), api.getActions(), api.getComponents()];
+    const fetches: Promise<any>[] = [api.getBarrels(), api.getActions(), api.getComponents(), api.getLoads()];
     if (id) fetches.push(api.getBox(id));
 
-    Promise.all(fetches).then(([br, a, c, box]) => {
+    Promise.all(fetches).then(([br, a, c, sl, box]) => {
       setBarrels(br);
       setActions(a);
       setComponents(c);
+      setSavedLoads(sl);
       if (box) {
         setBrand(box.brand);
         setBoxNumber(box.boxNumber);
@@ -183,6 +185,29 @@ export default function BoxForm() {
         {hasLoad && (
           <div className="bg-gray-50 rounded-lg p-4 space-y-3">
             <h3 className="font-medium text-sm">Load Details</h3>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Use a saved load</label>
+              <select
+                onChange={(e) => {
+                  const sl = savedLoads.find((l) => l.id === e.target.value);
+                  if (sl) {
+                    setLoad({
+                      powderCharge: sl.powderCharge,
+                      powder: sl.powder,
+                      primer: sl.primer,
+                      projectile: sl.projectile,
+                      length: sl.length,
+                    });
+                  }
+                }}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+              >
+                <option value="">Custom</option>
+                {savedLoads.map((sl) => (
+                  <option key={sl.id} value={sl.id}>{sl.name}</option>
+                ))}
+              </select>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs text-gray-500 mb-1">

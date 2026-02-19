@@ -1,4 +1,4 @@
-import type { AmmoBox, Action, Barrel, Components, Load } from "../../../shared/types";
+import type { AmmoBox, Action, Barrel, Components, Load, SavedLoad } from "../../../shared/types";
 
 const BASE = "/api";
 
@@ -102,5 +102,22 @@ export const api = {
   },
   deleteComponent(type: string, index: number) {
     return request<Components>(`/components/${type}/${index}`, { method: "DELETE" });
+  },
+
+  // Saved Loads
+  getLoads() {
+    return request<SavedLoad[]>("/loads");
+  },
+  getLoad(id: string) {
+    return request<SavedLoad>(`/loads/${id}`);
+  },
+  createLoad(data: Partial<SavedLoad>) {
+    return request<SavedLoad>("/loads", { method: "POST", body: JSON.stringify(data) });
+  },
+  updateLoad(id: string, data: Partial<SavedLoad>) {
+    return request<SavedLoad>(`/loads/${id}`, { method: "PUT", body: JSON.stringify(data) });
+  },
+  deleteLoad(id: string) {
+    return request<void>(`/loads/${id}`, { method: "DELETE" });
   },
 };

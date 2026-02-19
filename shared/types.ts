@@ -61,9 +61,23 @@ export interface Components {
   projectiles: string[];
 }
 
+export interface SavedLoad {
+  id: string;
+  name: string;
+  powderCharge: string;
+  powder: string;
+  primer: string;
+  projectile: string;
+  length: string;
+  notes: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AppData {
   boxes: AmmoBox[];
   actions: Action[];
   barrels: Barrel[];
   components: Components;
+  loads: SavedLoad[];
 }

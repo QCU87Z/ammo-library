@@ -16,6 +16,7 @@ const SEED_DATA: AppData = {
     primers: [],
     projectiles: [],
   },
+  loads: [],
 };
 
 interface OldRifle {
@@ -47,6 +48,7 @@ function migrateFromRifles(old: OldAppData): AppData {
       actions: old.actions || [],
       barrels: old.barrels || [],
       components: old.components || { powders: [], primers: [], projectiles: [] },
+      loads: [],
     };
   }
 
@@ -110,6 +112,7 @@ function migrateFromRifles(old: OldAppData): AppData {
     actions,
     barrels,
     components: old.components || { powders: [], primers: [], projectiles: [] },
+    loads: [],
   };
 }
 
@@ -133,7 +136,9 @@ class Store {
           return migrated;
         }
 
-        return parsed as unknown as AppData;
+        const result = parsed as unknown as AppData;
+        if (!result.loads) result.loads = [];
+        return result;
       }
     } catch (err) {
       console.error("Failed to read data file, using seed data:", err);
