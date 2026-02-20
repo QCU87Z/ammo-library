@@ -69,10 +69,10 @@ export const api = {
   // Barrels
   getBarrels(params?: Record<string, string>) {
     const qs = params ? "?" + new URLSearchParams(params).toString() : "";
-    return request<Barrel[]>(`/barrels${qs}`);
+    return request<(Barrel & { roundCount: number })[]>(`/barrels${qs}`);
   },
   getBarrel(id: string) {
-    return request<Barrel & { boxes: AmmoBox[] }>(`/barrels/${id}`);
+    return request<Barrel & { boxes: AmmoBox[]; roundCount: number }>(`/barrels/${id}`);
   },
   createBarrel(data: Partial<Barrel>) {
     return request<Barrel>("/barrels", { method: "POST", body: JSON.stringify(data) });

@@ -1,24 +1,49 @@
 import { Router } from "express";
 import { v4 as uuidv4 } from "uuid";
 import { store } from "../storage/store";
-import { Barrel } from "../../../shared/types";
+import { Barrel, AmmoBox } from "../../../shared/types";
 
 export const barrelsRouter = Router();
 
+function computeRoundCount(barrelId: string, boxes: AmmoBox[]): number {
+  let total = 0;
+  for (const box of boxes) {
+    const periods = box.barrelHistory.filter((h) => h.barrelId === barrelId);
+    for (const period of periods) {
+      const periodStart = new Date(period.assignedDate).getTime();
+      const periodEnd = period.unassignedDate
+        ? new Date(period.unassignedDate).getTime()
+        : Date.now();
+      const loadsInPeriod = box.loadHistory.filter((l) => {
+        const t = new Date(l.date).getTime();
+        return t >= periodStart && t <= periodEnd;
+      }).length;
+      let sessions = loadsInPeriod;
+      if (!period.unassignedDate && box.currentLoad !== null) {
+        sessions += 1;
+      }
+      total += sessions * box.numberOfRounds;
+    }
+  }
+  return total;
+}
+
 barrelsRouter.get("/", (req, res) => {
   let barrels = store.getData().barrels;
+  const boxes = store.getData().boxes;
   const { actionId } = req.query;
   if (actionId && typeof actionId === "string") {
     barrels = barrels.filter((b) => b.actionId === actionId);
   }
-  res.json(barrels);
+  res.json(barrels.map((b) => ({ ...b, roundCount: computeRoundCount(b.id, boxes) })));
 });
 
 barrelsRouter.get("/:id", (req, res) => {
   const barrel = store.getData().barrels.find((b) => b.id === req.params.id);
   if (!barrel) return res.status(404).json({ error: "Barrel not found" });
-  const boxes = store.getData().boxes.filter((b) => b.barrelId === barrel.id);
-  res.json({ ...barrel, boxes });
+  const boxes = store.getData().boxes;
+  const assignedBoxes = boxes.filter((b) => b.barrelId === barrel.id);
+  res.json({ ...barrel, boxes: assignedBoxes, roundCount: computeRoundCount(barrel.id, boxes) });
 });
 
 barrelsRouter.post("/", (req, res) => {

@@ -4,12 +4,12 @@ import { api } from "../api/client";
 import type { Barrel, AmmoBox, Action } from "../../../shared/types";
 import BoxCard from "../components/BoxCard";
 import ConfirmDialog from "../components/ConfirmDialog";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Trash2, Target } from "lucide-react";
 
 export default function BarrelDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [barrel, setBarrel] = useState<(Barrel & { boxes: AmmoBox[] }) | null>(null);
+  const [barrel, setBarrel] = useState<(Barrel & { boxes: AmmoBox[]; roundCount: number }) | null>(null);
   const [action, setAction] = useState<Action | null>(null);
   const [loading, setLoading] = useState(true);
   const [deleteOpen, setDeleteOpen] = useState(false);
@@ -102,6 +102,11 @@ export default function BarrelDetail() {
             </div>
           ))}
         </dl>
+        <div className="mt-4 flex items-center gap-2 text-sm bg-gray-50 rounded-lg px-3 py-2">
+          <Target size={15} className="text-gray-500 shrink-0" />
+          <span className="text-gray-500">Rounds through barrel:</span>
+          <span className="font-semibold text-gray-900">{barrel.roundCount.toLocaleString()}</span>
+        </div>
         {barrel.notes && (
           <div className="mt-4">
             <p className="text-sm text-gray-500">Notes</p>

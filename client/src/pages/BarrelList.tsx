@@ -2,10 +2,10 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../api/client";
 import type { Barrel, Action } from "../../../shared/types";
-import { Plus, Circle } from "lucide-react";
+import { Plus, Circle, Target } from "lucide-react";
 
 export default function BarrelList() {
-  const [barrels, setBarrels] = useState<Barrel[]>([]);
+  const [barrels, setBarrels] = useState<(Barrel & { roundCount: number })[]>([]);
   const [actions, setActions] = useState<Action[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -57,6 +57,10 @@ export default function BarrelList() {
                     on {actionMap[barrel.actionId] || "Unknown"}
                   </p>
                 )}
+              </div>
+              <div className="mt-3 flex items-center gap-1.5 text-sm font-medium text-gray-700">
+                <Target size={13} className="text-gray-400" />
+                {barrel.roundCount.toLocaleString()} rounds
               </div>
             </Link>
           ))}
