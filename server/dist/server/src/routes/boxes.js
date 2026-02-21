@@ -7,19 +7,20 @@ const store_1 = require("../storage/store");
 exports.boxesRouter = (0, express_1.Router)();
 exports.boxesRouter.get("/", (req, res) => {
     let boxes = store_1.store.getData().boxes;
-    const { search, rifleId, status, brand } = req.query;
+    const { search, barrelId, status, brand } = req.query;
     if (search && typeof search === "string") {
         const q = search.toLowerCase();
-        const rifles = store_1.store.getData().rifles;
+        const barrels = store_1.store.getData().barrels;
         boxes = boxes.filter((b) => {
-            const rifleName = rifles.find((r) => r.id === b.rifleId)?.name || "";
+            const barrel = barrels.find((br) => br.id === b.barrelId);
+            const barrelName = barrel ? `${barrel.caliber} ${barrel.barrelLength}` : "";
             return (b.boxNumber.toLowerCase().includes(q) ||
                 b.brand.toLowerCase().includes(q) ||
-                rifleName.toLowerCase().includes(q));
+                barrelName.toLowerCase().includes(q));
         });
     }
-    if (rifleId && typeof rifleId === "string") {
-        boxes = boxes.filter((b) => b.rifleId === rifleId);
+    if (barrelId && typeof barrelId === "string") {
+        boxes = boxes.filter((b) => b.barrelId === barrelId);
     }
     if (status && typeof status === "string") {
         boxes = boxes.filter((b) => b.status === status);
@@ -42,21 +43,21 @@ exports.boxesRouter.post("/", (req, res) => {
         brand: req.body.brand || "",
         boxNumber: req.body.boxNumber || "",
         numberOfRounds: req.body.numberOfRounds || 0,
-        rifleId: req.body.rifleId || null,
+        barrelId: req.body.barrelId || null,
         status: "active",
         currentLoad: req.body.currentLoad || null,
         loadHistory: [],
-        rifleHistory: [],
+        barrelHistory: [],
         createdAt: now,
         updatedAt: now,
     };
-    // If a rifle is assigned, add to rifle history
-    if (box.rifleId) {
-        const rifle = store_1.store.getData().rifles.find((r) => r.id === box.rifleId);
-        if (rifle) {
-            box.rifleHistory.push({
-                rifleId: rifle.id,
-                rifleName: rifle.name,
+    // If a barrel is assigned, add to barrel history
+    if (box.barrelId) {
+        const barrel = store_1.store.getData().barrels.find((b) => b.id === box.barrelId);
+        if (barrel) {
+            box.barrelHistory.push({
+                barrelId: barrel.id,
+                barrelName: `${barrel.caliber} ${barrel.barrelLength}`.trim(),
                 assignedDate: now,
             });
         }
@@ -111,6 +112,7 @@ exports.boxesRouter.post("/:id/reload", (req, res) => {
         powder: newLoad.powder || "",
         primer: newLoad.primer || "",
         projectile: newLoad.projectile || "",
+        length: newLoad.length || "",
     };
     if (numberOfRounds !== undefined) {
         box.numberOfRounds = numberOfRounds;
@@ -119,33 +121,33 @@ exports.boxesRouter.post("/:id/reload", (req, res) => {
     store_1.store.save();
     res.json(box);
 });
-// Assign rifle
-exports.boxesRouter.post("/:id/assign-rifle", (req, res) => {
+// Assign barrel
+exports.boxesRouter.post("/:id/assign-barrel", (req, res) => {
     const data = store_1.store.getData();
     const box = data.boxes.find((b) => b.id === req.params.id);
     if (!box)
         return res.status(404).json({ error: "Box not found" });
-    const { rifleId } = req.body;
+    const { barrelId } = req.body;
     const now = new Date().toISOString();
-    // Unassign current rifle
-    if (box.rifleId) {
-        const currentEntry = box.rifleHistory.find((h) => h.rifleId === box.rifleId && !h.unassignedDate);
+    // Unassign current barrel
+    if (box.barrelId) {
+        const currentEntry = box.barrelHistory.find((h) => h.barrelId === box.barrelId && !h.unassignedDate);
         if (currentEntry) {
             currentEntry.unassignedDate = now;
         }
     }
-    // Assign new rifle
-    if (rifleId) {
-        const rifle = data.rifles.find((r) => r.id === rifleId);
-        if (!rifle)
-            return res.status(404).json({ error: "Rifle not found" });
-        box.rifleHistory.unshift({
-            rifleId: rifle.id,
-            rifleName: rifle.name,
+    // Assign new barrel
+    if (barrelId) {
+        const barrel = data.barrels.find((b) => b.id === barrelId);
+        if (!barrel)
+            return res.status(404).json({ error: "Barrel not found" });
+        box.barrelHistory.unshift({
+            barrelId: barrel.id,
+            barrelName: `${barrel.caliber} ${barrel.barrelLength}`.trim(),
             assignedDate: now,
         });
     }
-    box.rifleId = rifleId || null;
+    box.barrelId = barrelId || null;
     box.updatedAt = now;
     store_1.store.save();
     res.json(box);

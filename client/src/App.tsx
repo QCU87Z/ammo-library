@@ -16,6 +16,10 @@ import LoadForm from "./pages/LoadForm";
 import ComponentManager from "./pages/ComponentManager";
 import ScanQR from "./pages/ScanQR";
 import PrintLabels from "./pages/PrintLabels";
+import CartridgeList from "./pages/CartridgeList";
+import CartridgeForm from "./pages/CartridgeForm";
+import ElevationList from "./pages/ElevationList";
+import ElevationForm from "./pages/ElevationForm";
 
 export default function App() {
   return (
@@ -41,6 +45,12 @@ export default function App() {
         <Route path="/components" element={<ComponentManager />} />
         <Route path="/scan" element={<ScanQR />} />
         <Route path="/print" element={<PrintLabels />} />
+        <Route path="/cartridges" element={<CartridgeList />} />
+        <Route path="/cartridges/new" element={<CartridgeForm />} />
+        <Route path="/cartridges/:id/edit" element={<CartridgeForm />} />
+        <Route path="/elevations" element={<ElevationList />} />
+        <Route path="/elevations/new" element={<ElevationForm />} />
+        <Route path="/elevations/:id/edit" element={<ElevationForm />} />
       </Route>
     </Routes>
   );

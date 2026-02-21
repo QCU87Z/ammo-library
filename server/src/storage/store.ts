@@ -17,6 +17,8 @@ const SEED_DATA: AppData = {
     projectiles: [],
   },
   loads: [],
+  cartridges: [],
+  elevations: [],
 };
 
 interface OldRifle {
@@ -49,6 +51,8 @@ function migrateFromRifles(old: OldAppData): AppData {
       barrels: old.barrels || [],
       components: old.components || { powders: [], primers: [], projectiles: [] },
       loads: [],
+      cartridges: [],
+      elevations: [],
     };
   }
 
@@ -113,6 +117,8 @@ function migrateFromRifles(old: OldAppData): AppData {
     barrels,
     components: old.components || { powders: [], primers: [], projectiles: [] },
     loads: [],
+    cartridges: [],
+    elevations: [],
   };
 }
 
@@ -138,6 +144,8 @@ class Store {
 
         const result = parsed as unknown as AppData;
         if (!result.loads) result.loads = [];
+        if (!result.cartridges) result.cartridges = [];
+        if (!result.elevations) result.elevations = [];
         return result;
       }
     } catch (err) {

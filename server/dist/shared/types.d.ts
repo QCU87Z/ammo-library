@@ -3,14 +3,15 @@ export interface Load {
     powder: string;
     primer: string;
     projectile: string;
+    length: string;
 }
 export interface LoadHistoryEntry extends Load {
     date: string;
     notes?: string;
 }
-export interface RifleHistoryEntry {
-    rifleId: string;
-    rifleName: string;
+export interface BarrelHistoryEntry {
+    barrelId: string;
+    barrelName: string;
     assignedDate: string;
     unassignedDate?: string;
 }
@@ -19,22 +20,30 @@ export interface AmmoBox {
     brand: string;
     boxNumber: string;
     numberOfRounds: number;
-    rifleId: string | null;
+    barrelId: string | null;
     status: "active" | "retired";
     currentLoad: Load | null;
     loadHistory: LoadHistoryEntry[];
-    rifleHistory: RifleHistoryEntry[];
+    barrelHistory: BarrelHistoryEntry[];
     createdAt: string;
     updatedAt: string;
 }
-export interface Rifle {
+export interface Action {
     id: string;
     name: string;
+    serialNumber: string;
+    scopeDetails: string;
+    notes: string;
+    createdAt: string;
+    updatedAt: string;
+}
+export interface Barrel {
+    id: string;
+    actionId: string | null;
+    serialNumber: string;
     caliber: string;
     barrelLength: string;
     twistRate: string;
-    actionType: string;
-    scopeDetails: string;
     zeroDistance: string;
     notes: string;
     createdAt: string;
@@ -45,8 +54,43 @@ export interface Components {
     primers: string[];
     projectiles: string[];
 }
+export interface SavedLoad {
+    id: string;
+    name: string;
+    powderCharge: string;
+    powder: string;
+    primer: string;
+    projectile: string;
+    length: string;
+    notes: string;
+    createdAt: string;
+    updatedAt: string;
+}
+export interface Cartridge {
+    id: string;
+    name: string;
+    brand: string;
+    bulletWeight: number | null;
+    muzzleVelocity: number | null;
+    createdAt: string;
+    updatedAt: string;
+}
+export interface Elevation {
+    id: string;
+    barrelId: string;
+    loadId: string;
+    distanceM: number;
+    moa: number;
+    recordedAt: string;
+    createdAt: string;
+    updatedAt: string;
+}
 export interface AppData {
     boxes: AmmoBox[];
-    rifles: Rifle[];
+    actions: Action[];
+    barrels: Barrel[];
     components: Components;
+    loads: SavedLoad[];
+    cartridges: Cartridge[];
+    elevations: Elevation[];
 }

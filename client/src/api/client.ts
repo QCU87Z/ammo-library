@@ -1,4 +1,4 @@
-import type { AmmoBox, Action, Barrel, Components, Load, SavedLoad } from "../../../shared/types";
+import type { AmmoBox, Action, Barrel, Components, Load, SavedLoad, Cartridge, Elevation } from "../../../shared/types";
 
 const BASE = "/api";
 
@@ -119,5 +119,40 @@ export const api = {
   },
   deleteLoad(id: string) {
     return request<void>(`/loads/${id}`, { method: "DELETE" });
+  },
+
+  // Cartridges
+  getCartridges() {
+    return request<Cartridge[]>("/cartridges");
+  },
+  getCartridge(id: string) {
+    return request<Cartridge>(`/cartridges/${id}`);
+  },
+  createCartridge(data: Partial<Cartridge>) {
+    return request<Cartridge>("/cartridges", { method: "POST", body: JSON.stringify(data) });
+  },
+  updateCartridge(id: string, data: Partial<Cartridge>) {
+    return request<Cartridge>(`/cartridges/${id}`, { method: "PUT", body: JSON.stringify(data) });
+  },
+  deleteCartridge(id: string) {
+    return request<void>(`/cartridges/${id}`, { method: "DELETE" });
+  },
+
+  // Elevations
+  getElevations(params?: Record<string, string>) {
+    const qs = params ? "?" + new URLSearchParams(params).toString() : "";
+    return request<Elevation[]>(`/elevations${qs}`);
+  },
+  getElevation(id: string) {
+    return request<Elevation>(`/elevations/${id}`);
+  },
+  createElevation(data: Partial<Elevation>) {
+    return request<Elevation>("/elevations", { method: "POST", body: JSON.stringify(data) });
+  },
+  updateElevation(id: string, data: Partial<Elevation>) {
+    return request<Elevation>(`/elevations/${id}`, { method: "PUT", body: JSON.stringify(data) });
+  },
+  deleteElevation(id: string) {
+    return request<void>(`/elevations/${id}`, { method: "DELETE" });
   },
 };

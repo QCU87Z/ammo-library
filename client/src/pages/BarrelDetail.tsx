@@ -1,24 +1,32 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { api } from "../api/client";
-import type { Barrel, AmmoBox, Action } from "../../../shared/types";
+import type { Barrel, AmmoBox, Action, SavedLoad, Elevation } from "../../../shared/types";
 import BoxCard from "../components/BoxCard";
 import ConfirmDialog from "../components/ConfirmDialog";
-import { Edit, Trash2, Target } from "lucide-react";
+import { Edit, Trash2, Target, Plus } from "lucide-react";
 
 export default function BarrelDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [barrel, setBarrel] = useState<(Barrel & { boxes: AmmoBox[]; roundCount: number }) | null>(null);
   const [action, setAction] = useState<Action | null>(null);
+  const [elevations, setElevations] = useState<Elevation[]>([]);
+  const [loads, setLoads] = useState<SavedLoad[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteError, setDeleteError] = useState("");
 
   useEffect(() => {
     if (!id) return;
-    api.getBarrel(id).then(async (b) => {
+    Promise.all([
+      api.getBarrel(id),
+      api.getElevations({ barrelId: id }),
+      api.getLoads(),
+    ]).then(async ([b, e, l]) => {
       setBarrel(b);
+      setElevations(e);
+      setLoads(l);
       if (b.actionId) {
         try {
           const a = await api.getAction(b.actionId);
@@ -55,6 +63,14 @@ export default function BarrelDetail() {
     ["Twist Rate", barrel.twistRate],
     ["Zero Distance", barrel.zeroDistance],
   ].filter(([, v]) => v);
+
+  const loadMap = Object.fromEntries(loads.map((l) => [l.id, l]));
+  const grouped = new Map<number, Elevation[]>();
+  for (const e of elevations) {
+    if (!grouped.has(e.distanceM)) grouped.set(e.distanceM, []);
+    grouped.get(e.distanceM)!.push(e);
+  }
+  const sortedDistances = [...grouped.keys()].sort((a, b) => a - b);
 
   return (
     <div className="space-y-6">
@@ -127,6 +143,54 @@ export default function BarrelDetail() {
           </div>
         ) : (
           <p className="text-sm text-gray-500">No boxes assigned to this barrel.</p>
+        )}
+      </section>
+
+      <section>
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-lg font-semibold">Elevation Data</h2>
+          <Link
+            to={`/elevations/new?barrelId=${barrel.id}`}
+            className="inline-flex items-center gap-1.5 text-sm text-blue-600 hover:text-blue-700 font-medium"
+          >
+            <Plus size={14} /> Add Entry
+          </Link>
+        </div>
+        {elevations.length === 0 ? (
+          <p className="text-sm text-gray-500">No DOPE data recorded for this barrel.</p>
+        ) : (
+          <div className="space-y-4">
+            {sortedDistances.map((dist) => (
+              <div key={dist}>
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">{dist}m</h3>
+                <div className="space-y-1.5">
+                  {grouped.get(dist)!.map((e) => {
+                    const load = loadMap[e.loadId];
+                    return (
+                      <div
+                        key={e.id}
+                        className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded px-3 py-2 text-sm"
+                      >
+                        <span className="flex-1 text-gray-800">
+                          {load?.name ?? "Unknown load"}
+                        </span>
+                        <span className="text-xs text-gray-400">{e.recordedAt}</span>
+                        <span className="font-mono font-semibold text-gray-900">
+                          {e.moa.toFixed(2)} MOA
+                        </span>
+                        <Link
+                          to={`/elevations/${e.id}/edit`}
+                          className="text-gray-400 hover:text-blue-600"
+                        >
+                          <Edit size={13} />
+                        </Link>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </section>
 

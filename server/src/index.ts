@@ -6,6 +6,8 @@ import { actionsRouter } from "./routes/actions";
 import { barrelsRouter } from "./routes/barrels";
 import { componentsRouter } from "./routes/components";
 import { loadsRouter } from "./routes/loads";
+import { cartridgesRouter } from "./routes/cartridges";
+import { elevationsRouter } from "./routes/elevations";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -19,6 +21,8 @@ app.use("/api/actions", actionsRouter);
 app.use("/api/barrels", barrelsRouter);
 app.use("/api/components", componentsRouter);
 app.use("/api/loads", loadsRouter);
+app.use("/api/cartridges", cartridgesRouter);
+app.use("/api/elevations", elevationsRouter);
 
 // Serve static files from client build
 const clientDist = process.env.CLIENT_DIST || path.resolve(__dirname, "../../client/dist");

@@ -74,10 +74,33 @@ export interface SavedLoad {
   updatedAt: string;
 }
 
+export interface Cartridge {
+  id: string;
+  name: string;
+  brand: string;
+  bulletWeight: number | null;
+  muzzleVelocity: number | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Elevation {
+  id: string;
+  barrelId: string;
+  loadId: string;
+  distanceM: number;
+  moa: number;
+  recordedAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AppData {
   boxes: AmmoBox[];
   actions: Action[];
   barrels: Barrel[];
   components: Components;
   loads: SavedLoad[];
+  cartridges: Cartridge[];
+  elevations: Elevation[];
 }
