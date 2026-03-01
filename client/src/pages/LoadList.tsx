@@ -15,22 +15,26 @@ export default function LoadList() {
     });
   }, []);
 
-  if (loading) return <div className="text-center py-12 text-gray-500">Loading...</div>;
+  if (loading) return (
+    <div className="flex items-center justify-center py-24">
+      <span className="font-mono text-xs tracking-[0.25em] text-gun-500 uppercase">Loading...</span>
+    </div>
+  );
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Saved Loads</h1>
+        <h1 className="font-display text-3xl tracking-widest text-gun-100">SAVED LOADS</h1>
         <Link
           to="/loads/new"
-          className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700"
+          className="inline-flex items-center gap-2 bg-brass text-gun-950 px-4 py-2 rounded text-sm font-body font-semibold hover:bg-brass-400 transition-colors"
         >
           <Plus size={16} /> New Load
         </Link>
       </div>
 
       {loads.length === 0 ? (
-        <p className="text-center text-gray-500 py-8">
+        <p className="text-center text-gun-500 py-8 font-body">
           No saved loads yet. Create one to reuse across boxes.
         </p>
       ) : (
@@ -39,13 +43,13 @@ export default function LoadList() {
             <Link
               key={load.id}
               to={`/loads/${load.id}/edit`}
-              className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+              className="bg-gun-800 border border-gun-700 rounded-lg p-4 hover:bg-gun-750 hover:border-gun-600 transition-all"
             >
               <div className="flex items-center gap-2 mb-2">
-                <FlaskConical size={18} className="text-gray-400" />
-                <span className="font-semibold">{load.name || "Unnamed Load"}</span>
+                <FlaskConical size={18} className="text-brass" />
+                <span className="font-body font-semibold text-gun-100">{load.name || "Unnamed Load"}</span>
               </div>
-              <div className="text-sm text-gray-600 space-y-1">
+              <div className="text-sm text-gun-400 font-body space-y-1">
                 {load.projectile && <p>Projectile: {load.projectile}</p>}
                 {load.powder && load.powderCharge && (
                   <p>Charge: {load.powderCharge} {load.powder}</p>

@@ -28,22 +28,33 @@ export default function BarrelList() {
     grouped.get(key)!.push(barrel);
   }
 
-  if (loading) return <div className="text-center py-12 text-gray-500">Loading...</div>;
+  if (loading) return (
+    <div className="flex items-center justify-center py-24">
+      <span className="font-mono text-xs tracking-[0.25em] text-gun-500 uppercase">Loading...</span>
+    </div>
+  );
 
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Barrels</h1>
+        <div>
+          <h1 className="font-display text-3xl tracking-widest text-gun-100">BARRELS</h1>
+        </div>
         <Link
           to="/actions"
-          className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700"
+          className="inline-flex items-center gap-2 bg-brass text-gun-950 px-4 py-2 rounded text-sm font-body font-semibold hover:bg-brass-400 transition-colors"
+          title="Barrels are added from an action's detail page"
         >
-          <Plus size={16} /> New Barrel
+          <Plus size={16} /> Add Barrel
         </Link>
       </div>
+      <p className="text-xs text-gun-500 font-mono -mt-2">
+        Barrels are added from an action's detail page.{" "}
+        <Link to="/actions" className="text-brass hover:underline">Go to Actions →</Link>
+      </p>
 
       {barrels.length === 0 ? (
-        <p className="text-center text-gray-500 py-8">
+        <p className="text-center text-gun-500 py-8 font-body">
           No barrels yet. Add one from an action's detail page.
         </p>
       ) : (
@@ -54,9 +65,9 @@ export default function BarrelList() {
               const action = actionId ? actionMap[actionId] : null;
               return (
                 <section key={actionId ?? "unassigned"}>
-                  <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-2">
+                  <h2 className="text-xs font-mono text-gun-500 uppercase tracking-[0.2em] mb-2">
                     {action ? (
-                      <Link to={`/actions/${actionId}`} className="hover:text-blue-600">
+                      <Link to={`/actions/${actionId}`} className="hover:text-brass transition-colors">
                         {action.name}
                       </Link>
                     ) : (
@@ -68,18 +79,18 @@ export default function BarrelList() {
                       <Link
                         key={barrel.id}
                         to={`/barrels/${barrel.id}`}
-                        className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                        className="bg-gun-800 border border-gun-700 rounded-lg p-4 hover:bg-gun-750 hover:border-gun-600 transition-all"
                       >
                         <div className="flex items-center gap-2 mb-2">
-                          <Circle size={14} className="text-gray-400" />
-                          <span className="font-semibold">{barrel.caliber}</span>
+                          <Circle size={14} className="text-brass" />
+                          <span className="font-body font-semibold text-gun-100">{barrel.caliber}</span>
                         </div>
-                        <div className="text-sm text-gray-600 space-y-1">
+                        <div className="text-sm text-gun-400 font-body space-y-1">
                           {barrel.barrelLength && <p>Length: {barrel.barrelLength}</p>}
                           {barrel.twistRate && <p>Twist: {barrel.twistRate}</p>}
                         </div>
-                        <div className="mt-3 flex items-center gap-1.5 text-sm font-medium text-gray-700">
-                          <Target size={13} className="text-gray-400" />
+                        <div className="mt-3 flex items-center gap-1.5 text-sm font-mono text-gun-500">
+                          <Target size={13} className="text-gun-500" />
                           {barrel.roundCount.toLocaleString()} rounds
                         </div>
                       </Link>

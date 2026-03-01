@@ -4,7 +4,7 @@ import { api } from "../api/client";
 import type { AmmoBox, Barrel, Action } from "../../../shared/types";
 import SearchBar from "../components/SearchBar";
 import BoxCard from "../components/BoxCard";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 
 export default function BoxList() {
   const [boxes, setBoxes] = useState<AmmoBox[]>([]);
@@ -47,7 +47,11 @@ export default function BoxList() {
     return true;
   });
 
-  if (loading) return <div className="text-center py-12 text-gray-500">Loading...</div>;
+  if (loading) return (
+    <div className="flex items-center justify-center py-24">
+      <span className="font-mono text-xs tracking-[0.25em] text-gun-500 uppercase">Loading...</span>
+    </div>
+  );
 
   // Group barrels by action for the filter dropdown
   const barrelsByAction = new Map<string, { actionName: string; barrels: Barrel[] }>();
@@ -65,13 +69,24 @@ export default function BoxList() {
     }
   }
 
+  const hasActiveFilters = Boolean(search || statusFilter || barrelFilter);
+
+  function clearFilters() {
+    setSearch("");
+    setStatusFilter("");
+    setBarrelFilter("");
+  }
+
+  const selectClass =
+    "bg-gun-800 border border-gun-600 rounded px-3 py-2 text-sm font-body text-gun-300 focus:outline-none focus:border-brass";
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Ammo Boxes</h1>
+        <h1 className="font-display text-3xl tracking-widest text-gun-100">AMMO BOXES</h1>
         <Link
           to="/boxes/new"
-          className="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700"
+          className="inline-flex items-center gap-2 bg-brass text-gun-950 px-4 py-2 rounded text-sm font-body font-semibold hover:bg-brass-400 transition-colors"
         >
           <Plus size={16} /> New Box
         </Link>
@@ -88,7 +103,7 @@ export default function BoxList() {
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+          className={selectClass}
         >
           <option value="">All statuses</option>
           <option value="active">Active</option>
@@ -97,7 +112,7 @@ export default function BoxList() {
         <select
           value={barrelFilter}
           onChange={(e) => setBarrelFilter(e.target.value)}
-          className="border border-gray-300 rounded-lg px-3 py-2 text-sm"
+          className={selectClass}
         >
           <option value="">All barrels</option>
           {[...barrelsByAction.entries()].map(([actId, group]) => (
@@ -119,6 +134,14 @@ export default function BoxList() {
             </optgroup>
           )}
         </select>
+        {hasActiveFilters && (
+          <button
+            onClick={clearFilters}
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-sm font-body text-gun-400 hover:text-brass border border-gun-600 rounded transition-colors"
+          >
+            <X size={14} /> Clear
+          </button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -128,9 +151,19 @@ export default function BoxList() {
       </div>
 
       {filtered.length === 0 && (
-        <p className="text-center text-gray-500 py-8">
-          {boxes.length === 0 ? "No boxes yet. Create one to get started." : "No boxes match your filters."}
-        </p>
+        <div className="text-center py-12">
+          <p className="text-gun-500 text-sm font-mono mb-3">
+            {boxes.length === 0 ? "No boxes yet. Create one to get started." : "No boxes match your filters."}
+          </p>
+          {hasActiveFilters && (
+            <button
+              onClick={clearFilters}
+              className="text-xs font-mono text-brass hover:underline tracking-[0.15em] uppercase"
+            >
+              Clear Filters →
+            </button>
+          )}
+        </div>
       )}
     </div>
   );

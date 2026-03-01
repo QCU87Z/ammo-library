@@ -90,12 +90,14 @@ export default function BarrelDetail() {
           <Link
             to={`/barrels/${barrel.id}/edit`}
             className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded"
+            aria-label="Edit barrel"
           >
             <Edit size={18} />
           </Link>
           <button
             onClick={() => setDeleteOpen(true)}
             className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded"
+            aria-label="Delete barrel"
           >
             <Trash2 size={18} />
           </button>
@@ -169,20 +171,24 @@ export default function BarrelDetail() {
                     return (
                       <div
                         key={e.id}
-                        className="flex items-center gap-3 bg-gray-50 border border-gray-200 rounded px-3 py-2 text-sm"
+                        className="bg-gun-900 border border-gun-700 rounded-lg px-4 py-3 flex items-center gap-4"
                       >
-                        <span className="flex-1 text-gray-800">
-                          {load?.name ?? "Unknown load"}
-                        </span>
-                        <span className="text-xs text-gray-400">{e.recordedAt}</span>
-                        <span className="font-mono font-semibold text-gray-900">
-                          {e.moa.toFixed(2)} MOA
-                        </span>
+                        <div className="flex-1 min-w-0">
+                          <span className="font-body font-medium text-gun-100 text-sm">
+                            {load?.name ?? "Unknown load"}
+                          </span>
+                          <p className="text-xs text-gun-600 font-mono mt-0.5">{e.recordedAt}</p>
+                        </div>
+                        <div className="font-mono text-lg font-semibold text-brass shrink-0">
+                          {e.moa.toFixed(2)}
+                          <span className="text-xs text-gun-500 ml-1">MOA</span>
+                        </div>
                         <Link
                           to={`/elevations/${e.id}/edit`}
-                          className="text-gray-400 hover:text-blue-600"
+                          className="p-1.5 text-gun-500 hover:text-brass transition-colors"
+                          aria-label="Edit entry"
                         >
-                          <Edit size={13} />
+                          <Edit size={14} />
                         </Link>
                       </div>
                     );
