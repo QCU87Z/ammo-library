@@ -19,6 +19,7 @@ exports.loadsRouter.post("/", (req, res) => {
     const load = {
         id: (0, uuid_1.v4)(),
         name: req.body.name || "",
+        caliber: req.body.caliber || undefined,
         powderCharge: req.body.powderCharge || "",
         powder: req.body.powder || "",
         primer: req.body.primer || "",
@@ -38,7 +39,7 @@ exports.loadsRouter.put("/:id", (req, res) => {
     if (idx === -1)
         return res.status(404).json({ error: "Saved load not found" });
     const load = data.loads[idx];
-    const updatable = ["name", "powderCharge", "powder", "primer", "projectile", "length", "notes"];
+    const updatable = ["name", "caliber", "powderCharge", "powder", "primer", "projectile", "length", "notes"];
     for (const key of updatable) {
         if (req.body[key] !== undefined) {
             load[key] = req.body[key];

@@ -43,6 +43,23 @@ interface OldAppData {
   components: any;
 }
 
+function migrateLoadCaliber(data: AppData): { data: AppData; changed: number } {
+  const calibers = Array.from(
+    new Set(data.barrels.map((b) => b.caliber).filter((c): c is string => Boolean(c)))
+  ).sort((a, b) => b.length - a.length);
+
+  let changed = 0;
+  for (const load of data.loads) {
+    if (load.caliber) continue;
+    const match = calibers.find((c) => load.name.toLowerCase().startsWith(c.toLowerCase()));
+    if (match) {
+      load.caliber = match;
+      changed++;
+    }
+  }
+  return { data, changed };
+}
+
 function migrateFromRifles(old: OldAppData): AppData {
   if (!old.rifles || old.rifles.length === 0) {
     return {
@@ -146,7 +163,13 @@ class Store {
         if (!result.loads) result.loads = [];
         if (!result.cartridges) result.cartridges = [];
         if (!result.elevations) result.elevations = [];
-        return result;
+
+        const { data: migrated, changed } = migrateLoadCaliber(result);
+        if (changed > 0) {
+          console.log(`Backfilled caliber on ${changed} load(s)`);
+          this.write(migrated);
+        }
+        return migrated;
       }
     } catch (err) {
       console.error("Failed to read data file, using seed data:", err);

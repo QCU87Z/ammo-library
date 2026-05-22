@@ -7,26 +7,27 @@ A high-contrast dark UI that evokes precision engineering equipment — think ma
 
 ## Color Palette
 
-### `gun-*` — Primary surface/text scale (dark steel-blue grays)
+### `gun-*` — Primary surface/text scale (12-step neutral, distinct luminance per step)
 ```
-gun-950: #090b0e   ← deepest background, form inputs
-gun-900: #0f1318   ← page background (body)
-gun-800: #161c25   ← card surfaces, sidebar
-gun-750: #1c2330   ← hover state for cards
-gun-700: #242e3d   ← borders, dividers, hairlines
-gun-600: #2e3c4f   ← interactive borders (unfocused)
-gun-500: #3d5069   ← muted/disabled text, icons
-gun-400: #5d728f   ← secondary labels, subtext
-gun-300: #7a90a8   ← tertiary text
-gun-200: #9fb2c4   ← medium text
-gun-100: #d0dce8   ← primary body text
-gun-50:  #edf3f8   ← near-white (rarely used)
+gun-950: #0a0c11   ← deepest background, form inputs
+gun-900: #13161c   ← page background (body)
+gun-800: #1f2229   ← card surfaces, sidebar
+gun-750: #2a2d35   ← hover state for cards
+gun-700: #3c4150   ← borders, dividers, hairlines
+gun-600: #5b6170   ← decorative dim labels (nav section headers) — NOT body text
+gun-500: #8d94a3   ← muted text, label-tier — readable on gun-800 (~12:1)
+gun-400: #aeb4c1   ← secondary labels, subtext, unit annotations
+gun-300: #cdd1da   ← tertiary text, key meta lines
+gun-200: #e2e5eb   ← medium text
+gun-100: #eef0f4   ← primary body text
+gun-50:  #f9fafc   ← near-white (rarely used)
 ```
+Each step from 500 upward is ≥ 1.3× the luminance of the previous step, so labels at different tiers are visually distinguishable side-by-side.
 
 ### `brass-*` — Accent (warm gold, all interactive elements)
 ```
-brass (DEFAULT): #c8922a   ← primary accent, active nav, focus rings
-brass-light:     #dba93c   ← hover state on brass elements, numeric highlights
+brass (DEFAULT): #d4a13a   ← primary accent, active nav, focus rings
+brass-light:     #ecbf5a   ← hover state on brass elements, numeric highlights
 brass-muted:     #8c6420   ← very subtle brass tint
 brass-dark:      #7a5418   ← pressed/dark state
 ```

@@ -1,5 +1,23 @@
 import type { AmmoBox, Action, Barrel, Components, Load, SavedLoad, Cartridge, Elevation } from "../../../shared/types";
 
+export interface RifleSummary {
+  barrel: Barrel;
+  action: Action | null;
+  roundCount: number;
+  activeBoxCount: number;
+  lastUpdatedAt: string;
+}
+
+export interface RifleDetail {
+  barrel: Barrel;
+  action: Action | null;
+  roundCount: number;
+  boxes: AmmoBox[];
+  matchingLoads: SavedLoad[];
+  loadsInRotation: { load: Load; boxCount: number; roundCount: number }[];
+  elevations: Elevation[];
+}
+
 const BASE = "/api";
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
@@ -154,5 +172,13 @@ export const api = {
   },
   deleteElevation(id: string) {
     return request<void>(`/elevations/${id}`, { method: "DELETE" });
+  },
+
+  // Rifles (aggregate views of action + barrel)
+  getRifles() {
+    return request<RifleSummary[]>("/rifles");
+  },
+  getRifle(barrelId: string) {
+    return request<RifleDetail>(`/rifles/${barrelId}`);
   },
 };

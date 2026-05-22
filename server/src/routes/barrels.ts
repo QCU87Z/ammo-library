@@ -5,7 +5,7 @@ import { Barrel, AmmoBox } from "../../../shared/types";
 
 export const barrelsRouter = Router();
 
-function computeRoundCount(barrelId: string, boxes: AmmoBox[]): number {
+export function computeRoundCount(barrelId: string, boxes: AmmoBox[]): number {
   let total = 0;
   for (const box of boxes) {
     const periods = box.barrelHistory.filter((h) => h.barrelId === barrelId);

@@ -1,6 +1,7 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate, useParams } from "react-router-dom";
 import Layout from "./components/Layout";
-import Dashboard from "./pages/Dashboard";
+import RiflesList from "./pages/RiflesList";
+import RifleDetail from "./pages/RifleDetail";
 import BoxList from "./pages/BoxList";
 import BoxDetail from "./pages/BoxDetail";
 import BoxForm from "./pages/BoxForm";
@@ -8,9 +9,7 @@ import ReloadForm from "./pages/ReloadForm";
 import ActionList from "./pages/ActionList";
 import ActionDetail from "./pages/ActionDetail";
 import ActionForm from "./pages/ActionForm";
-import BarrelList from "./pages/BarrelList";
 import BarrelForm from "./pages/BarrelForm";
-import BarrelDetail from "./pages/BarrelDetail";
 import LoadList from "./pages/LoadList";
 import LoadForm from "./pages/LoadForm";
 import ComponentManager from "./pages/ComponentManager";
@@ -21,11 +20,18 @@ import CartridgeForm from "./pages/CartridgeForm";
 import ElevationList from "./pages/ElevationList";
 import ElevationForm from "./pages/ElevationForm";
 
+function BarrelToRifleRedirect() {
+  const { id } = useParams<{ id: string }>();
+  return <Navigate to={`/rifles/${id}`} replace />;
+}
+
 export default function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" element={<RiflesList />} />
+        <Route path="/rifles/:barrelId" element={<RifleDetail />} />
+        <Route path="/rifles/:id/edit" element={<BarrelForm />} />
         <Route path="/boxes" element={<BoxList />} />
         <Route path="/boxes/new" element={<BoxForm />} />
         <Route path="/boxes/:id" element={<BoxDetail />} />
@@ -36,8 +42,8 @@ export default function App() {
         <Route path="/actions/:id" element={<ActionDetail />} />
         <Route path="/actions/:id/edit" element={<ActionForm />} />
         <Route path="/actions/:actionId/barrels/new" element={<BarrelForm />} />
-        <Route path="/barrels" element={<BarrelList />} />
-        <Route path="/barrels/:id" element={<BarrelDetail />} />
+        <Route path="/barrels" element={<Navigate to="/" replace />} />
+        <Route path="/barrels/:id" element={<BarrelToRifleRedirect />} />
         <Route path="/barrels/:id/edit" element={<BarrelForm />} />
         <Route path="/loads" element={<LoadList />} />
         <Route path="/loads/new" element={<LoadForm />} />

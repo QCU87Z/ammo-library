@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.barrelsRouter = void 0;
+exports.computeRoundCount = computeRoundCount;
 const express_1 = require("express");
 const uuid_1 = require("uuid");
 const store_1 = require("../storage/store");

@@ -57,6 +57,7 @@ export interface Components {
 export interface SavedLoad {
     id: string;
     name: string;
+    caliber?: string;
     powderCharge: string;
     powder: string;
     primer: string;

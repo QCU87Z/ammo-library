@@ -13,6 +13,7 @@ const components_1 = require("./routes/components");
 const loads_1 = require("./routes/loads");
 const cartridges_1 = require("./routes/cartridges");
 const elevations_1 = require("./routes/elevations");
+const rifles_1 = require("./routes/rifles");
 const app = (0, express_1.default)();
 const PORT = process.env.PORT || 3001;
 app.use((0, cors_1.default)());
@@ -25,6 +26,7 @@ app.use("/api/components", components_1.componentsRouter);
 app.use("/api/loads", loads_1.loadsRouter);
 app.use("/api/cartridges", cartridges_1.cartridgesRouter);
 app.use("/api/elevations", elevations_1.elevationsRouter);
+app.use("/api/rifles", rifles_1.riflesRouter);
 // Serve static files from client build
 const clientDist = process.env.CLIENT_DIST || path_1.default.resolve(__dirname, "../../client/dist");
 app.use(express_1.default.static(clientDist));

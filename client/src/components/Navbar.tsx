@@ -1,9 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import {
-  Home,
   Box,
   Crosshair,
-  Circle,
   Layers,
   FlaskConical,
   ScanLine,
@@ -12,18 +10,15 @@ import {
   X,
   Target,
   Package,
+  Aperture,
 } from "lucide-react";
 
 const NAV_SECTIONS = [
   {
     label: null,
     items: [
-      { to: "/", label: "Dashboard", icon: Home },
-      { to: "/boxes", label: "Boxes", icon: Box },
-      { to: "/actions", label: "Actions", icon: Crosshair },
-      { to: "/barrels", label: "Barrels", icon: Circle },
-      { to: "/loads", label: "Loads", icon: FlaskConical },
-      { to: "/components", label: "Components", icon: Layers },
+      { to: "/", label: "Rifles", icon: Aperture },
+      { to: "/boxes", label: "Ammo", icon: Box },
       { to: "/scan", label: "Scan QR", icon: ScanLine },
       { to: "/print", label: "Print Labels", icon: Printer },
     ],
@@ -33,6 +28,14 @@ const NAV_SECTIONS = [
     items: [
       { to: "/elevations", label: "Elevations", icon: Target },
       { to: "/cartridges", label: "Cartridges", icon: Package },
+    ],
+  },
+  {
+    label: "Library",
+    items: [
+      { to: "/actions", label: "Actions", icon: Crosshair },
+      { to: "/loads", label: "Loads", icon: FlaskConical },
+      { to: "/components", label: "Components", icon: Layers },
     ],
   },
 ];

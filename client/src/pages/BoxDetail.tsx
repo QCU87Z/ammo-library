@@ -203,7 +203,7 @@ export default function BoxDetail() {
             <section className="bg-white border rounded-lg p-4">
               <h2 className="text-lg font-semibold mb-2">Assigned Barrel</h2>
               <Link
-                to={`/barrels/${currentBarrel.id}`}
+                to={`/rifles/${currentBarrel.id}`}
                 className="text-blue-600 hover:underline"
               >
                 {currentBarrelName}

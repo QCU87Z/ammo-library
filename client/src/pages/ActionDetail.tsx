@@ -104,7 +104,7 @@ export default function ActionDetail() {
             {action.barrels.map((barrel) => (
               <Link
                 key={barrel.id}
-                to={`/barrels/${barrel.id}`}
+                to={`/rifles/${barrel.id}`}
                 className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
               >
                 <div className="flex items-center gap-2 mb-2">

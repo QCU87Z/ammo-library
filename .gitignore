@@ -1,3 +1,4 @@
 node_modules
 data/*
 .playwright-cli/
+live_data.json

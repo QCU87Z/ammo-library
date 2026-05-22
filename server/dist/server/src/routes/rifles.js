@@ -2,70 +2,65 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.riflesRouter = void 0;
 const express_1 = require("express");
-const uuid_1 = require("uuid");
 const store_1 = require("../storage/store");
+const barrels_1 = require("./barrels");
 exports.riflesRouter = (0, express_1.Router)();
+function loadKey(load) {
+    return [load.powder, load.powderCharge, load.primer, load.projectile, load.length].join("|");
+}
 exports.riflesRouter.get("/", (_req, res) => {
-    res.json(store_1.store.getData().rifles);
+    const { barrels, actions, boxes } = store_1.store.getData();
+    const actionMap = new Map(actions.map((a) => [a.id, a]));
+    const summaries = barrels.map((barrel) => {
+        const assignedBoxes = boxes.filter((b) => b.barrelId === barrel.id);
+        const lastUpdatedAt = assignedBoxes.reduce((acc, b) => (b.updatedAt > acc ? b.updatedAt : acc), barrel.updatedAt);
+        return {
+            barrel,
+            action: barrel.actionId ? actionMap.get(barrel.actionId) ?? null : null,
+            roundCount: (0, barrels_1.computeRoundCount)(barrel.id, boxes),
+            activeBoxCount: assignedBoxes.filter((b) => b.status === "active").length,
+            lastUpdatedAt,
+        };
+    });
+    res.json(summaries);
 });
-exports.riflesRouter.get("/:id", (req, res) => {
-    const rifle = store_1.store.getData().rifles.find((r) => r.id === req.params.id);
-    if (!rifle)
+exports.riflesRouter.get("/:barrelId", (req, res) => {
+    const { barrels, actions, boxes, loads, elevations } = store_1.store.getData();
+    const barrel = barrels.find((b) => b.id === req.params.barrelId);
+    if (!barrel)
         return res.status(404).json({ error: "Rifle not found" });
-    const boxes = store_1.store.getData().boxes.filter((b) => b.rifleId === rifle.id);
-    res.json({ ...rifle, boxes });
-});
-exports.riflesRouter.post("/", (req, res) => {
-    const now = new Date().toISOString();
-    const rifle = {
-        id: (0, uuid_1.v4)(),
-        name: req.body.name || "",
-        caliber: req.body.caliber || "",
-        barrelLength: req.body.barrelLength || "",
-        twistRate: req.body.twistRate || "",
-        actionType: req.body.actionType || "",
-        scopeDetails: req.body.scopeDetails || "",
-        zeroDistance: req.body.zeroDistance || "",
-        notes: req.body.notes || "",
-        createdAt: now,
-        updatedAt: now,
-    };
-    store_1.store.getData().rifles.push(rifle);
-    store_1.store.save();
-    res.status(201).json(rifle);
-});
-exports.riflesRouter.put("/:id", (req, res) => {
-    const data = store_1.store.getData();
-    const idx = data.rifles.findIndex((r) => r.id === req.params.id);
-    if (idx === -1)
-        return res.status(404).json({ error: "Rifle not found" });
-    const rifle = data.rifles[idx];
-    const updatable = [
-        "name", "caliber", "barrelLength", "twistRate",
-        "actionType", "scopeDetails", "zeroDistance", "notes",
-    ];
-    for (const key of updatable) {
-        if (req.body[key] !== undefined) {
-            rifle[key] = req.body[key];
+    const action = barrel.actionId ? actions.find((a) => a.id === barrel.actionId) ?? null : null;
+    const assignedBoxes = boxes.filter((b) => b.barrelId === barrel.id);
+    const matchingLoads = loads.filter((l) => l.caliber && barrel.caliber && l.caliber.toLowerCase() === barrel.caliber.toLowerCase());
+    const rotationMap = new Map();
+    for (const box of assignedBoxes) {
+        if (!box.currentLoad)
+            continue;
+        const key = loadKey(box.currentLoad);
+        const existing = rotationMap.get(key);
+        if (existing) {
+            existing.boxCount++;
+            existing.roundCount += box.numberOfRounds;
+        }
+        else {
+            rotationMap.set(key, {
+                load: box.currentLoad,
+                boxCount: 1,
+                roundCount: box.numberOfRounds,
+            });
         }
     }
-    rifle.updatedAt = new Date().toISOString();
-    store_1.store.save();
-    res.json(rifle);
-});
-exports.riflesRouter.delete("/:id", (req, res) => {
-    const data = store_1.store.getData();
-    const assignedBoxes = data.boxes.filter((b) => b.rifleId === req.params.id);
-    if (assignedBoxes.length > 0) {
-        return res.status(409).json({
-            error: "Rifle has assigned boxes",
-            boxCount: assignedBoxes.length,
-        });
-    }
-    const idx = data.rifles.findIndex((r) => r.id === req.params.id);
-    if (idx === -1)
-        return res.status(404).json({ error: "Rifle not found" });
-    data.rifles.splice(idx, 1);
-    store_1.store.save();
-    res.status(204).send();
+    const loadsInRotation = Array.from(rotationMap.values()).sort((a, b) => b.roundCount - a.roundCount);
+    const barrelElevations = elevations
+        .filter((e) => e.barrelId === barrel.id)
+        .sort((a, b) => a.distanceM - b.distanceM || b.recordedAt.localeCompare(a.recordedAt));
+    res.json({
+        barrel,
+        action,
+        roundCount: (0, barrels_1.computeRoundCount)(barrel.id, boxes),
+        boxes: assignedBoxes,
+        matchingLoads,
+        loadsInRotation,
+        elevations: barrelElevations,
+    });
 });

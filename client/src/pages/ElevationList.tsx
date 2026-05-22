@@ -129,7 +129,7 @@ export default function ElevationList() {
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-gun-600 font-mono mt-0.5">{e.recordedAt}</p>
+                        <p className="text-xs text-gun-400 font-mono mt-0.5">{e.recordedAt}</p>
                       </div>
                       <div className="font-mono text-xl font-semibold text-brass shrink-0">
                         {e.moa.toFixed(2)}

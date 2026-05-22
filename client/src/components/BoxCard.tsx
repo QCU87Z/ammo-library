@@ -38,7 +38,7 @@ export default function BoxCard({ box, barrelName }: BoxCardProps) {
           <p className="text-xs text-gun-400 font-body">{barrelName}</p>
         )}
         {box.currentLoad && (
-          <p className="text-xs text-gun-500 font-body truncate">
+          <p className="text-xs text-gun-300 font-body truncate">
             {box.currentLoad.projectile} · {box.currentLoad.powderCharge}{" "}
             {box.currentLoad.powder}
           </p>

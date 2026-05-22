@@ -8,6 +8,7 @@ import { componentsRouter } from "./routes/components";
 import { loadsRouter } from "./routes/loads";
 import { cartridgesRouter } from "./routes/cartridges";
 import { elevationsRouter } from "./routes/elevations";
+import { riflesRouter } from "./routes/rifles";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -23,6 +24,7 @@ app.use("/api/components", componentsRouter);
 app.use("/api/loads", loadsRouter);
 app.use("/api/cartridges", cartridgesRouter);
 app.use("/api/elevations", elevationsRouter);
+app.use("/api/rifles", riflesRouter);
 
 // Serve static files from client build
 const clientDist = process.env.CLIENT_DIST || path.resolve(__dirname, "../../client/dist");

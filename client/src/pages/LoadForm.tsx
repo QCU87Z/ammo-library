@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { api } from "../api/client";
 import type { Components } from "../../../shared/types";
 
 export default function LoadForm() {
   const { id } = useParams<{ id: string }>();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const isEdit = Boolean(id);
 
   const [name, setName] = useState("");
+  const [caliber, setCaliber] = useState("");
+  const [knownCalibers, setKnownCalibers] = useState<string[]>([]);
   const [powderCharge, setPowderCharge] = useState("");
   const [powder, setPowder] = useState("");
   const [primer, setPrimer] = useState("");
@@ -24,27 +27,44 @@ export default function LoadForm() {
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    const fetches: Promise<any>[] = [api.getComponents()];
+    const fetches: Promise<any>[] = [api.getComponents(), api.getBarrels()];
     if (id) fetches.push(api.getLoad(id));
 
-    Promise.all(fetches).then(([c, load]) => {
+    Promise.all(fetches).then(([c, barrels, load]) => {
       setComponents(c);
+      const calibers = Array.from(
+        new Set((barrels as any[]).map((b) => b.caliber).filter(Boolean))
+      ).sort() as string[];
+      setKnownCalibers(calibers);
       if (load) {
         setName(load.name);
+        setCaliber(load.caliber ?? "");
         setPowderCharge(load.powderCharge);
         setPowder(load.powder);
         setPrimer(load.primer);
         setProjectile(load.projectile);
         setLength(load.length);
         setNotes(load.notes);
+      } else {
+        const cFromQuery = searchParams.get("caliber");
+        if (cFromQuery) setCaliber(cFromQuery);
       }
       setLoading(false);
     });
-  }, [id]);
+  }, [id, searchParams]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const data = { name, powderCharge, powder, primer, projectile, length, notes };
+    const data = {
+      name,
+      caliber: caliber || undefined,
+      powderCharge,
+      powder,
+      primer,
+      projectile,
+      length,
+      notes,
+    };
 
     if (isEdit && id) {
       await api.updateLoad(id, data);
@@ -82,6 +102,23 @@ export default function LoadForm() {
             placeholder='e.g. "168gr SMK / 42.5gr Varget"'
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
+        </div>
+
+        <div>
+          <label className="block text-xs text-gray-500 mb-1">Caliber</label>
+          <input
+            type="text"
+            list="known-calibers"
+            value={caliber}
+            onChange={(e) => setCaliber(e.target.value)}
+            placeholder='e.g. "284 WIN"'
+            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"
+          />
+          <datalist id="known-calibers">
+            {knownCalibers.map((c) => (
+              <option key={c} value={c} />
+            ))}
+          </datalist>
         </div>
 
         <div className="grid grid-cols-2 gap-3">

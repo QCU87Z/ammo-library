@@ -46,10 +46,10 @@ export default function BarrelForm() {
 
     if (isEdit && id) {
       await api.updateBarrel(id, data);
-      navigate(`/barrels/${id}`);
+      navigate(`/rifles/${id}`);
     } else {
       const created = await api.createBarrel(data);
-      navigate(`/barrels/${created.id}`);
+      navigate(`/rifles/${created.id}`);
     }
   }
 
